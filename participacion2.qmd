@@ -1,6 +1,6 @@
 ---
 title: "VISUAL"
-author: "Pedro Pena"
+author: "Pedro Pena - Juan Endara"
 format: html
 ---
 
@@ -46,3 +46,123 @@ chart = alt.Chart(df).mark_boxplot().encode(
 
 chart
 ```
+
+## ¿Qué gráfico usarías?
+
+Boxplot facetado.
+
+## ¿Cómo facilitar la comparación?
+
+Usando faceting por isla (small multiples).
+
+## ¿Qué patrones se observan?
+
+Gentoo es la especie más pesada.
+
+Adelie es más ligera.
+
+Hay diferencias claras entre especies.
+
+Algunas especies están asociadas a ciertas islas específicas.
+
+# Pregunta 2 – Ubicación de especies
+
+```{python}
+# Pregunta 2 – Ubicación de especies (isla vs especie)
+
+# Conteo de registros por combinación isla-especie
+rel = (
+    df.groupby(["island", "species"])
+      .size()
+      .reset_index(name="n")
+)
+
+# Heatmap (matriz de asociación)
+base = alt.Chart(rel).encode(
+    x=alt.X("island:N", title="Isla"),
+    y=alt.Y("species:N", title="Especie"),
+    tooltip=[
+        alt.Tooltip("island:N", title="Isla"),
+        alt.Tooltip("species:N", title="Especie"),
+        alt.Tooltip("n:Q", title="Cantidad")
+    ]
+)
+
+heatmap = base.mark_rect().encode(
+    color=alt.Color("n:Q", title="Cantidad", scale=alt.Scale(scheme="blues"))
+)
+
+labels = base.mark_text(color="black").encode(
+    text=alt.Text("n:Q")
+)
+
+chart = (heatmap + labels).properties(
+    title="Relación entre especies de pingüinos e islas",
+    width=350,
+    height=180
+)
+
+
+
+# Verificación: especies presentes en una sola isla
+solo_una_isla = (
+    df.groupby("species")["island"]
+      .nunique()
+      .reset_index(name="num_islas")
+)
+
+print("Número de islas por especie:")
+print(solo_una_isla)
+
+print("\nEspecies presentes en una sola isla:")
+print(solo_una_isla[solo_una_isla["num_islas"] == 1])
+
+chart
+
+```
+
+## ¿Qué especies de pingüinos se encuentran en cada isla? ¿Alguna especie está presente solo en una isla?
+
+Se puede observar que solo la especie Adelie se encuentra en las 3 islas. Por otro lado tanto la especie Gentoo como la Chinstrap solo se encuentran en una isla cada una de ellas.
+
+## ¿Qué técnica visual te permitiría mostrar esta relación de forma compacta y clara?
+Un heatmap es una forma adecuada para mostrar la relación entre las especies de pingüinos y las islas de forma compacta y clara. Este tipo de gráfico utiliza colores para representar la cantidad de registros en cada combinación de isla y especie, lo que facilita la identificación de patrones y asociaciones entre las variables. Además, al incluir etiquetas con los valores numéricos, se proporciona información adicional sin sobrecargar el gráfico, permitiendo una interpretación rápida y efectiva de los datos.
+
+### Interpretación del resultado
+
+
+El heatmap muestra una asociación clara entre la especie de pingüino y la isla. La especie Adelie es la única presente en las tres islas (Biscoe, Dream y Torgersen), por lo que tiene la distribución más amplia dentro del dataset. En cambio, Chinstrap aparece únicamente en Dream (68 registros) y Gentoo únicamente en Biscoe (124 registros), lo que indica una presencia exclusiva en una sola isla para ambas especies. Además, la mayor concentración observada corresponde a Gentoo en Biscoe, mientras que en Torgersen solo se registra Adelie (52).
+
+# Pregunta 3 - Diferencias entre sexos
+
+```{python}
+import numpy as np
+# Reemplazar "." por NaN
+df["sex"] = df["sex"].replace(".", np.nan)
+
+# Eliminar filas con valores faltantes en sex o flipper_length_mm
+df = df.dropna(subset=["sex", "flipper_length_mm"])
+
+chart = alt.Chart(df).mark_boxplot(extent="min-max").encode(
+    x=alt.X('sex:N', title='Sex'),
+    y=alt.Y('flipper_length_mm:Q', title='Flipper Length (mm)'),
+    color=alt.Color('sex:N', legend=None)
+).properties(
+    title='Comparación de Longitud de Aleta entre Machos y Hembras',
+    width=200
+)
+
+chart
+```
+
+## Variable elegida:
+
+flipper_length_mm
+
+## Tipo de gráfico:
+
+Boxplot
+
+## Justificación:
+
+El boxplot permite comparar claramente la distribución, mediana y dispersión de una variable cuantitativa entre dos categorías, facilitando la identificación de diferencias estructurales entre grupos.
