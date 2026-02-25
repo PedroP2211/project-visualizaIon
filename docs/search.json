@@ -1,12 +1,5 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "VISUAL",
-    "section": "",
-    "text": "Dataset\nvamos a utilizar el dataset de ‘carros’ de vega_dataset https://vega.github.io/vega-datasets/\n\n\nCode\nimport altair as alt\nfrom vega_datasets import data\n\n\n\n\nAutos\n\n\nCode\ncars=data.cars()\ncars.head()\n\n\n\n\n\n\n\n\n\nName\nMiles_per_Gallon\nCylinders\nDisplacement\nHorsepower\nWeight_in_lbs\nAcceleration\nYear\nOrigin\n\n\n\n\n0\nchevrolet chevelle malibu\n18.0\n8\n307.0\n130.0\n3504\n12.0\n1970-01-01\nUSA\n\n\n1\nbuick skylark 320\n15.0\n8\n350.0\n165.0\n3693\n11.5\n1970-01-01\nUSA\n\n\n2\nplymouth satellite\n18.0\n8\n318.0\n150.0\n3436\n11.0\n1970-01-01\nUSA\n\n\n3\namc rebel sst\n16.0\n8\n304.0\n150.0\n3433\n12.0\n1970-01-01\nUSA\n\n\n4\nford torino\n17.0\n8\n302.0\n140.0\n3449\n10.5\n1970-01-01\nUSA\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart (cars, title= \"Viz 1\").mark_point().encode(\n    alt.X('Miles_per_Gallon'),\n    alt.Y('Weight_in_lbs'),\n    tooltip=[\n        'Miles_per_Gallon',\n        'Weight_in_lbs'\n    ]\n).interactive()"
-  },
-  {
     "objectID": "participacion2.html",
     "href": "participacion2.html",
     "title": "VISUAL",
@@ -35,6 +28,20 @@
     "text": "¿Qué patrones se observan?\nGentoo es la especie más pesada.\nAdelie es más ligera.\nHay diferencias claras entre especies.\nAlgunas especies están asociadas a ciertas islas específicas."
   },
   {
+    "objectID": "participacion2.html#qué-especies-de-pingüinos-se-encuentran-en-cada-isla-alguna-especie-está-presente-solo-en-una-isla",
+    "href": "participacion2.html#qué-especies-de-pingüinos-se-encuentran-en-cada-isla-alguna-especie-está-presente-solo-en-una-isla",
+    "title": "VISUAL",
+    "section": "¿Qué especies de pingüinos se encuentran en cada isla? ¿Alguna especie está presente solo en una isla?",
+    "text": "¿Qué especies de pingüinos se encuentran en cada isla? ¿Alguna especie está presente solo en una isla?\nSe puede observar que solo la especie Adelie se encuentra en las 3 islas. Por otro lado tanto la especie Gentoo como la Chinstrap solo se encuentran en una isla cada una de ellas."
+  },
+  {
+    "objectID": "participacion2.html#qué-técnica-visual-te-permitiría-mostrar-esta-relación-de-forma-compacta-y-clara",
+    "href": "participacion2.html#qué-técnica-visual-te-permitiría-mostrar-esta-relación-de-forma-compacta-y-clara",
+    "title": "VISUAL",
+    "section": "¿Qué técnica visual te permitiría mostrar esta relación de forma compacta y clara?",
+    "text": "¿Qué técnica visual te permitiría mostrar esta relación de forma compacta y clara?\nUn heatmap es una forma adecuada para mostrar la relación entre las especies de pingüinos y las islas de forma compacta y clara. Este tipo de gráfico utiliza colores para representar la cantidad de registros en cada combinación de isla y especie, lo que facilita la identificación de patrones y asociaciones entre las variables. Además, al incluir etiquetas con los valores numéricos, se proporciona información adicional sin sobrecargar el gráfico, permitiendo una interpretación rápida y efectiva de los datos.\n\nInterpretación del resultado\nEl heatmap muestra una asociación clara entre la especie de pingüino y la isla. La especie Adelie es la única presente en las tres islas (Biscoe, Dream y Torgersen), por lo que tiene la distribución más amplia dentro del dataset. En cambio, Chinstrap aparece únicamente en Dream (68 registros) y Gentoo únicamente en Biscoe (124 registros), lo que indica una presencia exclusiva en una sola isla para ambas especies. Además, la mayor concentración observada corresponde a Gentoo en Biscoe, mientras que en Torgersen solo se registra Adelie (52)."
+  },
+  {
     "objectID": "participacion2.html#variable-elegida",
     "href": "participacion2.html#variable-elegida",
     "title": "VISUAL",
@@ -56,17 +63,10 @@
     "text": "Justificación:\nEl boxplot permite comparar claramente la distribución, mediana y dispersión de una variable cuantitativa entre dos categorías, facilitando la identificación de diferencias estructurales entre grupos."
   },
   {
-    "objectID": "participacion2.html#qué-especies-de-pingüinos-se-encuentran-en-cada-isla-alguna-especie-está-presente-solo-en-una-isla",
-    "href": "participacion2.html#qué-especies-de-pingüinos-se-encuentran-en-cada-isla-alguna-especie-está-presente-solo-en-una-isla",
+    "objectID": "index.html",
+    "href": "index.html",
     "title": "VISUAL",
-    "section": "¿Qué especies de pingüinos se encuentran en cada isla? ¿Alguna especie está presente solo en una isla?",
-    "text": "¿Qué especies de pingüinos se encuentran en cada isla? ¿Alguna especie está presente solo en una isla?\nSe puede observar que solo la especie Adelie se encuentra en las 3 islas. Por otro lado tanto la especie Gentoo como la Chinstrap solo se encuentran en una isla cada una de ellas."
-  },
-  {
-    "objectID": "participacion2.html#qué-técnica-visual-te-permitiría-mostrar-esta-relación-de-forma-compacta-y-clara",
-    "href": "participacion2.html#qué-técnica-visual-te-permitiría-mostrar-esta-relación-de-forma-compacta-y-clara",
-    "title": "VISUAL",
-    "section": "¿Qué técnica visual te permitiría mostrar esta relación de forma compacta y clara?",
-    "text": "¿Qué técnica visual te permitiría mostrar esta relación de forma compacta y clara?\nUn heatmap es una forma adecuada para mostrar la relación entre las especies de pingüinos y las islas de forma compacta y clara. Este tipo de gráfico utiliza colores para representar la cantidad de registros en cada combinación de isla y especie, lo que facilita la identificación de patrones y asociaciones entre las variables. Además, al incluir etiquetas con los valores numéricos, se proporciona información adicional sin sobrecargar el gráfico, permitiendo una interpretación rápida y efectiva de los datos.\n\nInterpretación del resultado\nEl heatmap muestra una asociación clara entre la especie de pingüino y la isla. La especie Adelie es la única presente en las tres islas (Biscoe, Dream y Torgersen), por lo que tiene la distribución más amplia dentro del dataset. En cambio, Chinstrap aparece únicamente en Dream (68 registros) y Gentoo únicamente en Biscoe (124 registros), lo que indica una presencia exclusiva en una sola isla para ambas especies. Además, la mayor concentración observada corresponde a Gentoo en Biscoe, mientras que en Torgersen solo se registra Adelie (52)."
+    "section": "",
+    "text": "Dataset\nvamos a utilizar el dataset de ‘carros’ de vega_dataset https://vega.github.io/vega-datasets/\n\n\nCode\nimport altair as alt\nfrom vega_datasets import data\n\n\n\n\nAutos\n\n\nCode\ncars=data.cars()\ncars.head()\n\n\n\n\n\n\n\n\n\nName\nMiles_per_Gallon\nCylinders\nDisplacement\nHorsepower\nWeight_in_lbs\nAcceleration\nYear\nOrigin\n\n\n\n\n0\nchevrolet chevelle malibu\n18.0\n8\n307.0\n130.0\n3504\n12.0\n1970-01-01\nUSA\n\n\n1\nbuick skylark 320\n15.0\n8\n350.0\n165.0\n3693\n11.5\n1970-01-01\nUSA\n\n\n2\nplymouth satellite\n18.0\n8\n318.0\n150.0\n3436\n11.0\n1970-01-01\nUSA\n\n\n3\namc rebel sst\n16.0\n8\n304.0\n150.0\n3433\n12.0\n1970-01-01\nUSA\n\n\n4\nford torino\n17.0\n8\n302.0\n140.0\n3449\n10.5\n1970-01-01\nUSA\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart (cars, title= \"Viz 1\").mark_point().encode(\n    alt.X('Miles_per_Gallon'),\n    alt.Y('Weight_in_lbs'),\n    tooltip=[\n        'Miles_per_Gallon',\n        'Weight_in_lbs'\n    ]\n).interactive()"
   }
 ]
