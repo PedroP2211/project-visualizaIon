@@ -1,0 +1,35 @@
+---
+title: "VISUAL"
+author: "Pedro Pena"
+format: html
+---
+
+# Dataset
+
+vamos a utilizar el dataset https://raw.githubusercontent.com/erickedu85/dataset/master/penguins.csv
+
+```{python}
+import altair as alt
+import pandas as pd
+
+# URL del dataset
+url = "https://raw.githubusercontent.com/erickedu85/dataset/master/penguins.csv"
+
+# Cargar el CSV
+df = pd.read_csv(url)
+
+# Mostrar primeras filas
+print(df.head())
+
+# Información general
+print("\nInfo del dataset:")
+print(df.info())
+
+```
+
+# Pregunta 1 – Distribución por grupo
+
+```{python}
+cars=data.cars()
+cars.head()
+```
