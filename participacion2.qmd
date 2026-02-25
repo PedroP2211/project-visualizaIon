@@ -30,6 +30,19 @@ print(df.info())
 # Pregunta 1 – Distribución por grupo
 
 ```{python}
-cars=data.cars()
-cars.head()
+# Eliminar valores nulos en body_mass_g
+df = df.dropna(subset=["body_mass_g"])
+
+# Crear boxplot facetado por isla
+chart = alt.Chart(df).mark_boxplot().encode(
+    x=alt.X('species:N', title='Species'),
+    y=alt.Y('body_mass_g:Q', title='Body Mass (g)'),
+    color=alt.Color('species:N', legend=None)
+).facet(
+    column='island:N'
+).properties(
+    title='Distribución de Masa Corporal por Especie e Isla'
+)
+
+chart
 ```
