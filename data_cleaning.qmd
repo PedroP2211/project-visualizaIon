@@ -1,0 +1,214 @@
+---
+title: "Limpieza y preparación de datos"
+author: "Pedro Pena - Juan Endara"
+format: html
+---
+# Introducción
+
+En este documento se presenta el proceso de limpieza y preparación de datos realizado sobre el dataset de ventas de Corporación La Favorita.  
+El objetivo es dejar los datos listos para el análisis exploratorio y la construcción de visualizaciones posteriores.
+
+# 1. Carga de librerías y dataset
+
+```{python}
+import pandas as pd
+import numpy as np
+
+```
+
+# Carga del dataset
+
+
+```{python}
+# Cargar dataset
+df = pd.read_csv("train.csv")
+df1 = pd.read_csv("stores.csv")
+df2 = pd.read_csv("transactions.csv")
+
+# Mostrar primeras filas
+print("Train:")
+display(df.head())
+
+print("Stores:")
+display(df1.head())
+
+print("Transactions:")
+display(df2.head())
+```
+
+En esta etapa se cargaron los tres archivos principales del proyecto. El archivo `train.csv` contiene la información de ventas, que será la base principal del análisis. El archivo `stores.csv` aporta atributos de las tiendas, como ciudad, estado, tipo y clúster. Por su parte, `transactions.csv` incluye el número de transacciones diarias por tienda, lo cual puede ser útil para contrastar el comportamiento de las ventas.
+
+La carga inicial permite verificar que los archivos se leen correctamente y observar una primera muestra de su contenido.
+
+
+# Exploración inicial del dataset
+
+La exploración inicial se realizó para entender la estructura de los datos y detectar posibles problemas antes de cualquier transformación. En esta fase se revisaron las dimensiones de cada archivo, los tipos de variables y sus principales estadísticas descriptivas.
+
+Esta revisión permite identificar si las variables se encuentran en el formato correcto, si existen columnas categóricas y numéricas relevantes para el análisis, y si los valores observados parecen consistentes con el contexto del problema.
+
+```{python}
+# Dimensiones del dataset
+print("Número de filas y columnas train:", df.shape)
+print("Número de filas y columnas stores:", df1.shape)
+print("Número de filas y columnas transactions:", df2.shape)
+```
+
+```{python}
+# Información general
+df.info()
+df1.info()
+df2.info()
+```
+
+```{python}
+# Tipos de datos
+print("Train:")
+display(df.dtypes)
+
+print("Stores:")
+display(df1.dtypes)
+
+print("Transactions:")
+display(df2.dtypes)
+```
+
+```{python}
+# Estadísticas descriptivas para variables numéricas
+print("Train:")
+display(df.describe())
+
+print("Stores:")
+display(df1.describe())
+
+print("Transactions:")
+display(df2.describe())
+```
+
+```{python}
+# Estadísticas para variables categóricas
+df.describe(include='object')
+df1.describe(include='object')
+df2.describe(include='object')
+
+```
+
+A partir de esta exploración se observa que `train.csv` es el dataset principal y el de mayor tamaño, con registros diarios de ventas por tienda y familia de producto. También se identificó que la variable `date` inicialmente se encuentra en formato de texto, por lo que requiere ser transformada a tipo fecha para facilitar análisis temporales. Asimismo, se verificó que existen variables categóricas como `family`, `city`, `state` y `type`, las cuales pueden utilizarse posteriormente en segmentaciones y visualizaciones comparativas.
+
+# Verificación de valores faltantes 
+
+La revisión de valores faltantes es una etapa fundamental en la preparación de datos, ya que permite detectar información incompleta que podría afectar el análisis o generar errores en las visualizaciones.
+
+En este caso, se evaluó tanto la cantidad como el porcentaje de valores nulos por columna en los tres datasets, con el fin de determinar si era necesario aplicar imputaciones, eliminar registros o mantener la información tal como se encuentra.
+
+```{python}
+# Cantidad de valores nulos por columna
+print("Train:")
+display(df.isnull().sum())
+
+print("Stores:")
+display(df1.isnull().sum())
+
+print("Transactions:")
+display(df2.isnull().sum())
+```
+
+```{python}
+# Porcentaje de valores nulos por columna
+(df.isnull().mean() * 100).round(2)
+(df1.isnull().mean() * 100).round(2)
+(df2.isnull().mean() * 100).round(2)
+```
+
+A partir de la revisión realizada, no se identificaron problemas graves de valores faltantes en las variables principales utilizadas para el análisis. Por ello, no fue necesario aplicar imputaciones ni eliminar observaciones en esta etapa.
+
+# Revisión de duplicados
+
+También se verificó la existencia de filas duplicadas, ya que su presencia puede distorsionar métricas agregadas como ventas totales, número de transacciones o conteos por categoría.
+
+La detección de duplicados permite evaluar si existen registros repetidos que deban ser eliminados para evitar sesgos en el análisis.
+
+```{python}
+# Número de filas duplicadas
+print("Train:")
+display(df.duplicated().sum())
+
+print("Stores:")
+display(df1.duplicated().sum())
+
+print("Transactions:")
+display(df2.duplicated().sum())
+```
+
+Con base en esta revisión, los registros duplicados se evaluaron como parte del control de calidad de los datos. En caso de no existir duplicados relevantes, no fue necesario eliminar filas. Esto sugiere que los datasets mantienen una estructura consistente para el análisis.
+
+# Transformaciones de variables
+
+Una de las transformaciones principales del proceso de preparación consistió en convertir la variable `date` al tipo de dato fecha. Esta decisión fue necesaria porque inicialmente la variable se encontraba en formato texto, lo que limita el análisis temporal.
+
+Transformar esta columna permite agrupar datos por día, mes o año, además de generar nuevas variables derivadas que facilitan la construcción de visualizaciones y el análisis de patrones estacionales.
+
+```{python}
+# Convertir la columna date a formato datetime
+df["date"] = pd.to_datetime(df["date"])
+
+# Verificar cambio
+df.info()
+```
+
+```{python}
+# Crear variables derivadas de la fecha
+df["year"] = df["date"].dt.year
+df["month"] = df["date"].dt.month
+df["day"] = df["date"].dt.day
+df["day_of_week"] = df["date"].dt.day_name()
+df["week"] = df["date"].dt.isocalendar().week.astype(int)
+
+df.head()
+```
+
+A partir de la variable `date` se generaron nuevas variables temporales: `year`, `month`, `day`, `day_of_week` y `week`. Estas variables fueron creadas para facilitar el análisis de tendencias de ventas en distintas escalas de tiempo y para apoyar visualizaciones como series temporales, comparaciones mensuales y patrones por día de la semana.
+
+La generación de estas variables constituye una decisión de transformación importante, ya que amplía las posibilidades analíticas sin alterar la información original del dataset.
+
+# Revisión de valores inconsistentes
+
+Además de los valores faltantes, se revisaron posibles inconsistencias en variables numéricas clave. En particular, se evaluó si existían ventas negativas o promociones negativas, ya que estos casos podrían reflejar errores de registro o problemas en la captura de datos.
+
+La detección de este tipo de valores ayuda a validar la coherencia del dataset antes de realizar análisis agregados o comparativos.
+
+```{python}
+# Verificar ventas negativas
+(df["sales"] < 0).sum()
+```
+
+```{python}
+# Verificar promociones negativas
+(df["onpromotion"] < 0).sum()
+```
+
+La revisión de inconsistencias permitió validar la calidad de las variables `sales` y `onpromotion`. En caso de no encontrarse valores negativos, se puede considerar que los datos presentan coherencia básica para el análisis. Si llegaran a existir, estos registros deberían ser evaluados individualmente antes de decidir su eliminación o corrección.
+
+# Revisión de cardinalidad de variables categóricas
+
+Finalmente, se analizó la cardinalidad de algunas variables categóricas, especialmente `store_nbr` y `family`. Este paso permite conocer cuántas categorías distintas existen y anticipar cómo podrían comportarse en las visualizaciones.
+
+Por ejemplo, una variable con muchas categorías puede requerir filtros, agrupaciones o selecciones específicas para evitar gráficos sobrecargados.
+
+```{python}
+# Número de tiendas únicas
+df["store_nbr"].nunique()
+```
+
+```{python}
+# Número de familias de productos únicas
+df["family"].nunique()
+```
+
+```{python}
+# Listado de familias de productos
+sorted(df["family"].unique())
+```
+
+La revisión mostró que el dataset contiene múltiples tiendas y varias familias de productos, lo que confirma que se trata de una base de datos con un alto nivel de detalle. Esta característica es útil para análisis segmentados, aunque también implica la necesidad de resumir o filtrar información en algunas visualizaciones para mejorar su interpretación.
+
