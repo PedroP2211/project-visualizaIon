@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Pedro Pena - Juan Endara">
+
+<title>Limpieza y preparación de datos</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción">Introducción</a></li>
+  <li><a href="#carga-de-librerías-y-dataset" id="toc-carga-de-librerías-y-dataset" class="nav-link" data-scroll-target="#carga-de-librerías-y-dataset">1. Carga de librerías y dataset</a></li>
+  <li><a href="#carga-del-dataset" id="toc-carga-del-dataset" class="nav-link" data-scroll-target="#carga-del-dataset">Carga del dataset</a></li>
+  <li><a href="#exploración-inicial-del-dataset" id="toc-exploración-inicial-del-dataset" class="nav-link" data-scroll-target="#exploración-inicial-del-dataset">Exploración inicial del dataset</a></li>
+  <li><a href="#verificación-de-valores-faltantes" id="toc-verificación-de-valores-faltantes" class="nav-link" data-scroll-target="#verificación-de-valores-faltantes">Verificación de valores faltantes</a></li>
+  <li><a href="#revisión-de-duplicados" id="toc-revisión-de-duplicados" class="nav-link" data-scroll-target="#revisión-de-duplicados">Revisión de duplicados</a></li>
+  <li><a href="#transformaciones-de-variables" id="toc-transformaciones-de-variables" class="nav-link" data-scroll-target="#transformaciones-de-variables">Transformaciones de variables</a></li>
+  <li><a href="#revisión-de-valores-inconsistentes" id="toc-revisión-de-valores-inconsistentes" class="nav-link" data-scroll-target="#revisión-de-valores-inconsistentes">Revisión de valores inconsistentes</a></li>
+  <li><a href="#revisión-de-cardinalidad-de-variables-categóricas" id="toc-revisión-de-cardinalidad-de-variables-categóricas" class="nav-link" data-scroll-target="#revisión-de-cardinalidad-de-variables-categóricas">Revisión de cardinalidad de variables categóricas</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Limpieza y preparación de datos</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Pedro Pena - Juan Endara </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introducción" class="level1">
+<h1>Introducción</h1>
+<p>En este documento se presenta el proceso de limpieza y preparación de datos realizado sobre el dataset de ventas de Corporación La Favorita.<br>
+El objetivo es dejar los datos listos para el análisis exploratorio y la construcción de visualizaciones posteriores.</p>
+</section>
+<section id="carga-de-librerías-y-dataset" class="level1">
+<h1>1. Carga de librerías y dataset</h1>
+<div id="9113f1f7" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="carga-del-dataset" class="level1">
+<h1>Carga del dataset</h1>
+<div id="5eb79445" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar dataset</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"train.csv"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df1 <span class="op">=</span> pd.read_csv(<span class="st">"stores.csv"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> pd.read_csv(<span class="st">"transactions.csv"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Mostrar primeras filas</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Train:"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>display(df.head())</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Stores:"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>display(df1.head())</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transactions:"</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>display(df2.head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Train:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">store_nbr</th>
+<th data-quarto-table-cell-role="th">family</th>
+<th data-quarto-table-cell-role="th">sales</th>
+<th data-quarto-table-cell-role="th">onpromotion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0</td>
+<td>2013-01-01</td>
+<td>1</td>
+<td>AUTOMOTIVE</td>
+<td>0.0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>1</td>
+<td>2013-01-01</td>
+<td>1</td>
+<td>BABY CARE</td>
+<td>0.0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2</td>
+<td>2013-01-01</td>
+<td>1</td>
+<td>BEAUTY</td>
+<td>0.0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>3</td>
+<td>2013-01-01</td>
+<td>1</td>
+<td>BEVERAGES</td>
+<td>0.0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>4</td>
+<td>2013-01-01</td>
+<td>1</td>
+<td>BOOKS</td>
+<td>0.0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Stores:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">store_nbr</th>
+<th data-quarto-table-cell-role="th">city</th>
+<th data-quarto-table-cell-role="th">state</th>
+<th data-quarto-table-cell-role="th">type</th>
+<th data-quarto-table-cell-role="th">cluster</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1</td>
+<td>Quito</td>
+<td>Pichincha</td>
+<td>D</td>
+<td>13</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2</td>
+<td>Quito</td>
+<td>Pichincha</td>
+<td>D</td>
+<td>13</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>3</td>
+<td>Quito</td>
+<td>Pichincha</td>
+<td>D</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>4</td>
+<td>Quito</td>
+<td>Pichincha</td>
+<td>D</td>
+<td>9</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>5</td>
+<td>Santo Domingo</td>
+<td>Santo Domingo de los Tsachilas</td>
+<td>D</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Transactions:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">store_nbr</th>
+<th data-quarto-table-cell-role="th">transactions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>2013-01-01</td>
+<td>25</td>
+<td>770</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2013-01-02</td>
+<td>1</td>
+<td>2111</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2013-01-02</td>
+<td>2</td>
+<td>2358</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>2013-01-02</td>
+<td>3</td>
+<td>3487</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>2013-01-02</td>
+<td>4</td>
+<td>1922</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>En esta etapa se cargaron los tres archivos principales del proyecto. El archivo <code>train.csv</code> contiene la información de ventas, que será la base principal del análisis. El archivo <code>stores.csv</code> aporta atributos de las tiendas, como ciudad, estado, tipo y clúster. Por su parte, <code>transactions.csv</code> incluye el número de transacciones diarias por tienda, lo cual puede ser útil para contrastar el comportamiento de las ventas.</p>
+<p>La carga inicial permite verificar que los archivos se leen correctamente y observar una primera muestra de su contenido.</p>
+</section>
+<section id="exploración-inicial-del-dataset" class="level1">
+<h1>Exploración inicial del dataset</h1>
+<p>La exploración inicial se realizó para entender la estructura de los datos y detectar posibles problemas antes de cualquier transformación. En esta fase se revisaron las dimensiones de cada archivo, los tipos de variables y sus principales estadísticas descriptivas.</p>
+<p>Esta revisión permite identificar si las variables se encuentran en el formato correcto, si existen columnas categóricas y numéricas relevantes para el análisis, y si los valores observados parecen consistentes con el contexto del problema.</p>
+<div id="c6c15958" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dimensiones del dataset</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Número de filas y columnas train:"</span>, df.shape)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Número de filas y columnas stores:"</span>, df1.shape)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Número de filas y columnas transactions:"</span>, df2.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Número de filas y columnas train: (3000888, 6)
+Número de filas y columnas stores: (54, 5)
+Número de filas y columnas transactions: (83488, 3)</code></pre>
+</div>
+</div>
+<div id="73e7c92b" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Información general</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df.info()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df1.info()</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>df2.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.DataFrame'&gt;
+RangeIndex: 3000888 entries, 0 to 3000887
+Data columns (total 6 columns):
+ #   Column       Dtype  
+---  ------       -----  
+ 0   id           int64  
+ 1   date         str    
+ 2   store_nbr    int64  
+ 3   family       str    
+ 4   sales        float64
+ 5   onpromotion  int64  
+dtypes: float64(1), int64(3), str(2)
+memory usage: 137.4 MB
+&lt;class 'pandas.DataFrame'&gt;
+RangeIndex: 54 entries, 0 to 53
+Data columns (total 5 columns):
+ #   Column     Non-Null Count  Dtype
+---  ------     --------------  -----
+ 0   store_nbr  54 non-null     int64
+ 1   city       54 non-null     str  
+ 2   state      54 non-null     str  
+ 3   type       54 non-null     str  
+ 4   cluster    54 non-null     int64
+dtypes: int64(2), str(3)
+memory usage: 2.2 KB
+&lt;class 'pandas.DataFrame'&gt;
+RangeIndex: 83488 entries, 0 to 83487
+Data columns (total 3 columns):
+ #   Column        Non-Null Count  Dtype
+---  ------        --------------  -----
+ 0   date          83488 non-null  str  
+ 1   store_nbr     83488 non-null  int64
+ 2   transactions  83488 non-null  int64
+dtypes: int64(2), str(1)
+memory usage: 1.9 MB</code></pre>
+</div>
+</div>
+<div id="b0eef07d" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tipos de datos</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Train:"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>display(df.dtypes)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Stores:"</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>display(df1.dtypes)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transactions:"</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>display(df2.dtypes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Train:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>id               int64
+date               str
+store_nbr        int64
+family             str
+sales          float64
+onpromotion      int64
+dtype: object</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Stores:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>store_nbr    int64
+city           str
+state          str
+type           str
+cluster      int64
+dtype: object</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Transactions:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>date              str
+store_nbr       int64
+transactions    int64
+dtype: object</code></pre>
+</div>
+</div>
+<div id="3d194ef5" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estadísticas descriptivas para variables numéricas</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Train:"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>display(df.describe())</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Stores:"</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>display(df1.describe())</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transactions:"</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>display(df2.describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Train:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">store_nbr</th>
+<th data-quarto-table-cell-role="th">sales</th>
+<th data-quarto-table-cell-role="th">onpromotion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">count</th>
+<td>3.000888e+06</td>
+<td>3.000888e+06</td>
+<td>3.000888e+06</td>
+<td>3.000888e+06</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">mean</th>
+<td>1.500444e+06</td>
+<td>2.750000e+01</td>
+<td>3.577757e+02</td>
+<td>2.602770e+00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">std</th>
+<td>8.662819e+05</td>
+<td>1.558579e+01</td>
+<td>1.101998e+03</td>
+<td>1.221888e+01</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">min</th>
+<td>0.000000e+00</td>
+<td>1.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">25%</th>
+<td>7.502218e+05</td>
+<td>1.400000e+01</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">50%</th>
+<td>1.500444e+06</td>
+<td>2.750000e+01</td>
+<td>1.100000e+01</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">75%</th>
+<td>2.250665e+06</td>
+<td>4.100000e+01</td>
+<td>1.958473e+02</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">max</th>
+<td>3.000887e+06</td>
+<td>5.400000e+01</td>
+<td>1.247170e+05</td>
+<td>7.410000e+02</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Stores:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">store_nbr</th>
+<th data-quarto-table-cell-role="th">cluster</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">count</th>
+<td>54.000000</td>
+<td>54.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">mean</th>
+<td>27.500000</td>
+<td>8.481481</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">std</th>
+<td>15.732133</td>
+<td>4.693395</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">min</th>
+<td>1.000000</td>
+<td>1.000000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">25%</th>
+<td>14.250000</td>
+<td>4.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">50%</th>
+<td>27.500000</td>
+<td>8.500000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">75%</th>
+<td>40.750000</td>
+<td>13.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">max</th>
+<td>54.000000</td>
+<td>17.000000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Transactions:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">store_nbr</th>
+<th data-quarto-table-cell-role="th">transactions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">count</th>
+<td>83488.000000</td>
+<td>83488.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">mean</th>
+<td>26.939237</td>
+<td>1694.602158</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">std</th>
+<td>15.608204</td>
+<td>963.286644</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">min</th>
+<td>1.000000</td>
+<td>5.000000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">25%</th>
+<td>13.000000</td>
+<td>1046.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">50%</th>
+<td>27.000000</td>
+<td>1393.000000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">75%</th>
+<td>40.000000</td>
+<td>2079.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">max</th>
+<td>54.000000</td>
+<td>8359.000000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="e5ba7206" class="cell" data-execution_count="7">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estadísticas para variables categóricas</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>df.describe(include<span class="op">=</span><span class="st">'object'</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df1.describe(include<span class="op">=</span><span class="st">'object'</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>df2.describe(include<span class="op">=</span><span class="st">'object'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\pedro\AppData\Local\Temp\ipykernel_44504\3061193361.py:2: Pandas4Warning:
+
+For backward compatibility, 'str' dtypes are included by select_dtypes when 'object' dtype is specified. This behavior is deprecated and will be removed in a future version. Explicitly pass 'str' to `include` to select them, or to `exclude` to remove them and silence this warning.
+See https://pandas.pydata.org/docs/user_guide/migration-3-strings.html#string-migration-select-dtypes for details on how to write code that works with pandas 2 and 3.
+
+C:\Users\pedro\AppData\Local\Temp\ipykernel_44504\3061193361.py:3: Pandas4Warning:
+
+For backward compatibility, 'str' dtypes are included by select_dtypes when 'object' dtype is specified. This behavior is deprecated and will be removed in a future version. Explicitly pass 'str' to `include` to select them, or to `exclude` to remove them and silence this warning.
+See https://pandas.pydata.org/docs/user_guide/migration-3-strings.html#string-migration-select-dtypes for details on how to write code that works with pandas 2 and 3.
+
+C:\Users\pedro\AppData\Local\Temp\ipykernel_44504\3061193361.py:4: Pandas4Warning:
+
+For backward compatibility, 'str' dtypes are included by select_dtypes when 'object' dtype is specified. This behavior is deprecated and will be removed in a future version. Explicitly pass 'str' to `include` to select them, or to `exclude` to remove them and silence this warning.
+See https://pandas.pydata.org/docs/user_guide/migration-3-strings.html#string-migration-select-dtypes for details on how to write code that works with pandas 2 and 3.
+</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">count</th>
+<td>83488</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">unique</th>
+<td>1682</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">top</th>
+<td>2017-04-20</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">freq</th>
+<td>54</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>A partir de esta exploración se observa que <code>train.csv</code> es el dataset principal y el de mayor tamaño, con registros diarios de ventas por tienda y familia de producto. También se identificó que la variable <code>date</code> inicialmente se encuentra en formato de texto, por lo que requiere ser transformada a tipo fecha para facilitar análisis temporales. Asimismo, se verificó que existen variables categóricas como <code>family</code>, <code>city</code>, <code>state</code> y <code>type</code>, las cuales pueden utilizarse posteriormente en segmentaciones y visualizaciones comparativas.</p>
+</section>
+<section id="verificación-de-valores-faltantes" class="level1">
+<h1>Verificación de valores faltantes</h1>
+<p>La revisión de valores faltantes es una etapa fundamental en la preparación de datos, ya que permite detectar información incompleta que podría afectar el análisis o generar errores en las visualizaciones.</p>
+<p>En este caso, se evaluó tanto la cantidad como el porcentaje de valores nulos por columna en los tres datasets, con el fin de determinar si era necesario aplicar imputaciones, eliminar registros o mantener la información tal como se encuentra.</p>
+<div id="47d8528c" class="cell" data-execution_count="8">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cantidad de valores nulos por columna</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Train:"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>display(df.isnull().<span class="bu">sum</span>())</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Stores:"</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>display(df1.isnull().<span class="bu">sum</span>())</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transactions:"</span>)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>display(df2.isnull().<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Train:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>id             0
+date           0
+store_nbr      0
+family         0
+sales          0
+onpromotion    0
+dtype: int64</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Stores:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>store_nbr    0
+city         0
+state        0
+type         0
+cluster      0
+dtype: int64</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Transactions:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>date            0
+store_nbr       0
+transactions    0
+dtype: int64</code></pre>
+</div>
+</div>
+<div id="7c2a25ab" class="cell" data-execution_count="9">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Porcentaje de valores nulos por columna</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>(df.isnull().mean() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>(df1.isnull().mean() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>(df2.isnull().mean() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>date            0.0
+store_nbr       0.0
+transactions    0.0
+dtype: float64</code></pre>
+</div>
+</div>
+<p>A partir de la revisión realizada, no se identificaron problemas graves de valores faltantes en las variables principales utilizadas para el análisis. Por ello, no fue necesario aplicar imputaciones ni eliminar observaciones en esta etapa.</p>
+</section>
+<section id="revisión-de-duplicados" class="level1">
+<h1>Revisión de duplicados</h1>
+<p>También se verificó la existencia de filas duplicadas, ya que su presencia puede distorsionar métricas agregadas como ventas totales, número de transacciones o conteos por categoría.</p>
+<p>La detección de duplicados permite evaluar si existen registros repetidos que deban ser eliminados para evitar sesgos en el análisis.</p>
+<div id="9c680c16" class="cell" data-execution_count="10">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de filas duplicadas</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Train:"</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>display(df.duplicated().<span class="bu">sum</span>())</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Stores:"</span>)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>display(df1.duplicated().<span class="bu">sum</span>())</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transactions:"</span>)</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>display(df2.duplicated().<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Train:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>np.int64(0)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Stores:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>np.int64(0)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Transactions:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>np.int64(0)</code></pre>
+</div>
+</div>
+<p>Con base en esta revisión, los registros duplicados se evaluaron como parte del control de calidad de los datos. En caso de no existir duplicados relevantes, no fue necesario eliminar filas. Esto sugiere que los datasets mantienen una estructura consistente para el análisis.</p>
+</section>
+<section id="transformaciones-de-variables" class="level1">
+<h1>Transformaciones de variables</h1>
+<p>Una de las transformaciones principales del proceso de preparación consistió en convertir la variable <code>date</code> al tipo de dato fecha. Esta decisión fue necesaria porque inicialmente la variable se encontraba en formato texto, lo que limita el análisis temporal.</p>
+<p>Transformar esta columna permite agrupar datos por día, mes o año, además de generar nuevas variables derivadas que facilitan la construcción de visualizaciones y el análisis de patrones estacionales.</p>
+<div id="7b2bfac9" class="cell" data-execution_count="11">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir la columna date a formato datetime</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"date"</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">"date"</span>])</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar cambio</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>df.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.DataFrame'&gt;
+RangeIndex: 3000888 entries, 0 to 3000887
+Data columns (total 6 columns):
+ #   Column       Dtype         
+---  ------       -----         
+ 0   id           int64         
+ 1   date         datetime64[us]
+ 2   store_nbr    int64         
+ 3   family       str           
+ 4   sales        float64       
+ 5   onpromotion  int64         
+dtypes: datetime64[us](1), float64(1), int64(3), str(1)
+memory usage: 137.4 MB</code></pre>
+</div>
+</div>
+<div id="fd0ec3e1" class="cell" data-execution_count="12">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear variables derivadas de la fecha</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"year"</span>] <span class="op">=</span> df[<span class="st">"date"</span>].dt.year</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"month"</span>] <span class="op">=</span> df[<span class="st">"date"</span>].dt.month</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"day"</span>] <span class="op">=</span> df[<span class="st">"date"</span>].dt.day</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"day_of_week"</span>] <span class="op">=</span> df[<span class="st">"date"</span>].dt.day_name()</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"week"</span>] <span class="op">=</span> df[<span class="st">"date"</span>].dt.isocalendar().week.astype(<span class="bu">int</span>)</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">store_nbr</th>
+<th data-quarto-table-cell-role="th">family</th>
+<th data-quarto-table-cell-role="th">sales</th>
+<th data-quarto-table-cell-role="th">onpromotion</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">day</th>
+<th data-quarto-table-cell-role="th">day_of_week</th>
+<th data-quarto-table-cell-role="th">week</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0</td>
+<td>2013-01-01</td>
+<td>1</td>
+<td>AUTOMOTIVE</td>
+<td>0.0</td>
+<td>0</td>
+<td>2013</td>
+<td>1</td>
+<td>1</td>
+<td>Tuesday</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>1</td>
+<td>2013-01-01</td>
+<td>1</td>
+<td>BABY CARE</td>
+<td>0.0</td>
+<td>0</td>
+<td>2013</td>
+<td>1</td>
+<td>1</td>
+<td>Tuesday</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2</td>
+<td>2013-01-01</td>
+<td>1</td>
+<td>BEAUTY</td>
+<td>0.0</td>
+<td>0</td>
+<td>2013</td>
+<td>1</td>
+<td>1</td>
+<td>Tuesday</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>3</td>
+<td>2013-01-01</td>
+<td>1</td>
+<td>BEVERAGES</td>
+<td>0.0</td>
+<td>0</td>
+<td>2013</td>
+<td>1</td>
+<td>1</td>
+<td>Tuesday</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>4</td>
+<td>2013-01-01</td>
+<td>1</td>
+<td>BOOKS</td>
+<td>0.0</td>
+<td>0</td>
+<td>2013</td>
+<td>1</td>
+<td>1</td>
+<td>Tuesday</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>A partir de la variable <code>date</code> se generaron nuevas variables temporales: <code>year</code>, <code>month</code>, <code>day</code>, <code>day_of_week</code> y <code>week</code>. Estas variables fueron creadas para facilitar el análisis de tendencias de ventas en distintas escalas de tiempo y para apoyar visualizaciones como series temporales, comparaciones mensuales y patrones por día de la semana.</p>
+<p>La generación de estas variables constituye una decisión de transformación importante, ya que amplía las posibilidades analíticas sin alterar la información original del dataset.</p>
+</section>
+<section id="revisión-de-valores-inconsistentes" class="level1">
+<h1>Revisión de valores inconsistentes</h1>
+<p>Además de los valores faltantes, se revisaron posibles inconsistencias en variables numéricas clave. En particular, se evaluó si existían ventas negativas o promociones negativas, ya que estos casos podrían reflejar errores de registro o problemas en la captura de datos.</p>
+<p>La detección de este tipo de valores ayuda a validar la coherencia del dataset antes de realizar análisis agregados o comparativos.</p>
+<div id="91385067" class="cell" data-execution_count="13">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar ventas negativas</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>(df[<span class="st">"sales"</span>] <span class="op">&lt;</span> <span class="dv">0</span>).<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>np.int64(0)</code></pre>
+</div>
+</div>
+<div id="7d6fbe15" class="cell" data-execution_count="14">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar promociones negativas</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>(df[<span class="st">"onpromotion"</span>] <span class="op">&lt;</span> <span class="dv">0</span>).<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>np.int64(0)</code></pre>
+</div>
+</div>
+<p>La revisión de inconsistencias permitió validar la calidad de las variables <code>sales</code> y <code>onpromotion</code>. En caso de no encontrarse valores negativos, se puede considerar que los datos presentan coherencia básica para el análisis. Si llegaran a existir, estos registros deberían ser evaluados individualmente antes de decidir su eliminación o corrección.</p>
+</section>
+<section id="revisión-de-cardinalidad-de-variables-categóricas" class="level1">
+<h1>Revisión de cardinalidad de variables categóricas</h1>
+<p>Finalmente, se analizó la cardinalidad de algunas variables categóricas, especialmente <code>store_nbr</code> y <code>family</code>. Este paso permite conocer cuántas categorías distintas existen y anticipar cómo podrían comportarse en las visualizaciones.</p>
+<p>Por ejemplo, una variable con muchas categorías puede requerir filtros, agrupaciones o selecciones específicas para evitar gráficos sobrecargados.</p>
+<div id="3cfb3347" class="cell" data-execution_count="15">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de tiendas únicas</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"store_nbr"</span>].nunique()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>54</code></pre>
+</div>
+</div>
+<div id="eeaf075b" class="cell" data-execution_count="16">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de familias de productos únicas</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"family"</span>].nunique()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<pre><code>33</code></pre>
+</div>
+</div>
+<div id="10489735" class="cell" data-execution_count="17">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Listado de familias de productos</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="bu">sorted</span>(df[<span class="st">"family"</span>].unique())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>['AUTOMOTIVE',
+ 'BABY CARE',
+ 'BEAUTY',
+ 'BEVERAGES',
+ 'BOOKS',
+ 'BREAD/BAKERY',
+ 'CELEBRATION',
+ 'CLEANING',
+ 'DAIRY',
+ 'DELI',
+ 'EGGS',
+ 'FROZEN FOODS',
+ 'GROCERY I',
+ 'GROCERY II',
+ 'HARDWARE',
+ 'HOME AND KITCHEN I',
+ 'HOME AND KITCHEN II',
+ 'HOME APPLIANCES',
+ 'HOME CARE',
+ 'LADIESWEAR',
+ 'LAWN AND GARDEN',
+ 'LINGERIE',
+ 'LIQUOR,WINE,BEER',
+ 'MAGAZINES',
+ 'MEATS',
+ 'PERSONAL CARE',
+ 'PET SUPPLIES',
+ 'PLAYERS AND ELECTRONICS',
+ 'POULTRY',
+ 'PREPARED FOODS',
+ 'PRODUCE',
+ 'SCHOOL AND OFFICE SUPPLIES',
+ 'SEAFOOD']</code></pre>
+</div>
+</div>
+<p>La revisión mostró que el dataset contiene múltiples tiendas y varias familias de productos, lo que confirma que se trata de una base de datos con un alto nivel de detalle. Esta característica es útil para análisis segmentados, aunque también implica la necesidad de resumir o filtrar información en algunas visualizaciones para mejorar su interpretación.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,573 @@
+---
+title: "Proyecto_final_visualizacion_de_datos"
+format: html
+author: "Pedro Pena - Juan Endara"
+
+---
+
+# Análisis de patrones de ventas en retail mediante visualización de datos
+
+## Contexto
+
+En el sector retail, comprender el comportamiento de las ventas es fundamental para la toma de decisiones estratégicas, como la planificación de inventarios, promociones y gestión de tiendas. Las ventas no dependen únicamente del producto, sino también de factores como el tiempo, la ubicación, el tipo de tienda y el comportamiento de los clientes.
+
+Este proyecto se enfoca en analizar patrones de ventas utilizando técnicas de visualización de datos, con el fin de identificar tendencias, relaciones y diferencias relevantes dentro del negocio.
+
+## Motivación
+
+El análisis de datos de ventas permite transformar grandes volúmenes de información en insights accionables. A través de visualizaciones adecuadas, es posible detectar patrones que no son evidentes en tablas de datos, como estacionalidad, comportamiento por categorías de productos y relaciones entre variables operativas.
+
+Este proyecto busca demostrar cómo la visualización de datos puede ser una herramienta clave para apoyar la toma de decisiones en contextos reales de negocio.
+
+## Preguntas de análisis
+
+Las principales preguntas que guían este proyecto son:
+
+- ¿Cómo evolucionan las ventas a lo largo del tiempo?
+- ¿Existen patrones estacionales en las ventas?
+- ¿Cómo se comportan diferentes familias de productos?
+- ¿Cómo se distribuyen las ventas y qué tan variables son?
+- ¿Existe una relación entre el número de transacciones y las ventas?
+
+## Dataset
+
+Se utiliza un dataset de retail que contiene información histórica de ventas a nivel de tienda y producto. Este dataset incluye múltiples fuentes de información, como:
+
+- Ventas diarias por producto y tienda
+- Información de tiendas (ubicación, tipo)
+- Transacciones por tienda
+
+Las variables incluyen datos de tipo:
+
+- Numérico (ventas, transacciones)
+- Categórico (familia de producto, tipo de tienda, ciudad)
+- Temporal (fecha)
+
+# Análisis y visualización de datos
+
+En esta sección se presentan las principales visualizaciones desarrolladas para responder las preguntas analíticas del proyecto. Cada visualización está acompañada de su respectiva interpretación, con el objetivo de comunicar los hallazgos de forma clara y accesible.
+
+### Carga de datos y preparación
+```{python}
+import pandas as pd
+import numpy as np
+import altair as alt
+
+# Permitir más filas en Altair
+alt.data_transformers.disable_max_rows()
+
+# Cargar archivos
+data = pd.read_csv("train.csv", parse_dates=["date"])
+stores = pd.read_csv("stores.csv")
+transactions = pd.read_csv("transactions.csv", parse_dates=["date"])
+
+# Crear variables útiles de tiempo
+data["year"] = data["date"].dt.year
+data["month"] = data["date"].dt.month
+data["month_name"] = data["date"].dt.strftime("%b")
+data["day_of_week"] = data["date"].dt.day_name()
+data["week"] = data["date"].dt.isocalendar().week.astype(int)
+
+# Orden lógico para los días
+orden_dias = [
+    "Monday", "Tuesday", "Wednesday", "Thursday",
+    "Friday", "Saturday", "Sunday"
+]
+```
+
+## Evolución de las ventas a lo largo del tiempo
+
+### Pregunta analítica
+¿Cómo evolucionan las ventas a lo largo del tiempo y qué patrones se pueden identificar?
+
+### Visualización
+```{python}
+
+
+# Ventas por día y familia
+sales_day_family = (
+    data.groupby(["date", "family"])["sales"]
+    .sum()
+    .reset_index()
+)
+
+# Ventas totales por día
+sales_day_total = (
+    data.groupby("date")["sales"]
+    .sum()
+    .reset_index()
+)
+
+sales_day_total["family"] = "TOTAL"
+
+# Unir datasets
+sales_day_combined = pd.concat(
+    [sales_day_total, sales_day_family],
+    ignore_index=True
+)
+
+# Opciones del dropdown
+families = ["TOTAL"] + sorted(data["family"].unique().tolist())
+
+family_param = alt.param(
+    name="Familia",
+    bind=alt.binding_select(options=families),
+    value="TOTAL"
+)
+
+# Gráfico
+chart = alt.Chart(sales_day_combined).mark_line().encode(
+    x=alt.X("date:T", title="Fecha"),
+    y=alt.Y(
+        "sales:Q",
+        title="Ventas",
+        axis=alt.Axis(format="~s")
+    ),
+    tooltip=[
+        alt.Tooltip("date:T", title="Fecha"),
+        alt.Tooltip("family:N", title="Familia"),
+        alt.Tooltip("sales:Q", title="Ventas", format=",.0f")
+    ]
+).add_params(
+    family_param
+).transform_filter(
+    "datum.family == Familia"
+).properties(
+    title="Tendencia de ventas diarias",
+    width=800,
+    height=400
+)
+
+chart
+```
+
+### Interpretación
+
+La serie temporal muestra una tendencia creciente clara en las ventas a lo largo del tiempo, lo que indica un crecimiento progresivo del negocio.
+
+Se observa una alta variabilidad diaria, con fluctuaciones frecuentes que sugieren la presencia de patrones de corto plazo, posiblemente asociados a comportamiento semanal o eventos específicos.
+
+Además, se identifican caídas abruptas en ciertos puntos cercanos a cero, lo que podría estar relacionado con días atípicos, problemas de registro o eventos extraordinarios.
+
+En general, el comportamiento evidencia una combinación de crecimiento sostenido con alta volatilidad en el corto plazo.
+
+### Ventas a lo largo del tiempo por mes
+
+```{python}
+import pandas as pd
+import altair as alt
+
+
+# Ventas por mes y familia
+sales_month_family = (
+    data.groupby([pd.Grouper(key="date", freq="ME"), "family"])["sales"]
+    .sum()
+    .reset_index()
+)
+
+# Ventas totales por mes
+sales_month_total = (
+    data.groupby(pd.Grouper(key="date", freq="ME"))["sales"]
+    .sum()
+    .reset_index()
+)
+
+# Agregar etiqueta para que aparezca en el selector
+sales_month_total["family"] = "TOTAL"
+
+# Unir ambos dataframes
+sales_combined = pd.concat(
+    [sales_month_total, sales_month_family],
+    ignore_index=True
+)
+
+# Crear lista de opciones: TOTAL + familias
+families = ["TOTAL"] + sorted(sales_month_family["family"].unique().tolist())
+
+# Parámetro del selector
+family_param = alt.param(
+    name="Familia",
+    bind=alt.binding_select(options=families),
+    value="TOTAL"
+)
+
+# Gráfico
+chart = alt.Chart(sales_combined).mark_line(point=True).encode(
+    x=alt.X(
+        "date:T",
+        title="Mes",
+        axis=alt.Axis(format="%Y-%m", labelAngle=-45)
+    ),
+    y=alt.Y(
+        "sales:Q",
+        title="Ventas Totales",
+        axis=alt.Axis(format="~s")
+    ),
+    tooltip=[
+        alt.Tooltip("date:T", title="Mes"),
+        alt.Tooltip("family:N", title="Familia"),
+        alt.Tooltip("sales:Q", title="Ventas", format=",.0f")
+    ]
+).add_params(
+    family_param
+).transform_filter(
+    "datum.family == Familia"
+).properties(
+    title="Tendencia mensual de ventas",
+    width=800,
+    height=400
+)
+
+chart
+```
+
+### Interpretación
+
+Al analizar las ventas a nivel mensual, se observa con mayor claridad una tendencia creciente a lo largo de los años.
+
+Las ventas pasan de aproximadamente 10 millones en los primeros periodos a valores cercanos a 30 millones en los últimos, lo que confirma un crecimiento significativo del negocio.
+
+También se observan fluctuaciones entre meses consecutivos, lo que sugiere la presencia de estacionalidad o efectos de eventos específicos.
+
+Esta visualización permite reducir el ruido diario y resaltar mejor la tendencia general del sistema.
+## Estacionalidad de las ventas
+
+### Pregunta analítica
+¿Existen patrones estacionales en las ventas a lo largo del año?
+
+### Visualización
+```{python}
+ventas_mensuales = (
+    data.groupby(["year", "month", "month_name"], as_index=False)["sales"]
+    .sum()
+)
+
+# Crear orden para meses
+orden_meses = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+heatmap_estacionalidad = (
+    alt.Chart(ventas_mensuales)
+    .mark_rect()
+    .encode(
+        x=alt.X("month_name:N", title="Mes", sort=orden_meses),
+        y=alt.Y("year:O", title="Año"),
+        color=alt.Color("sales:Q", title="Ventas"),
+        tooltip=[
+            alt.Tooltip("year:O", title="Año"),
+            alt.Tooltip("month_name:N", title="Mes"),
+            alt.Tooltip("sales:Q", title="Ventas", format=",.2f")
+        ]
+    )
+    .properties(
+        title="Estacionalidad de ventas por mes y año",
+        width=700,
+        height=250
+    )
+)
+
+heatmap_estacionalidad
+```
+
+### Interpretación
+
+El mapa de calor evidencia patrones estacionales claros en las ventas.
+
+Se observa que hacia los últimos meses del año, especialmente en noviembre y diciembre, las ventas tienden a ser más altas en comparación con otros periodos, lo que sugiere un comportamiento recurrente asociado a temporadas comerciales.
+
+Adicionalmente, se aprecia un aumento general en la intensidad de las ventas a lo largo de los años, lo que refuerza la tendencia creciente identificada en las visualizaciones anteriores.
+
+Este patrón indica que tanto el tiempo (año) como la estacionalidad mensual influyen en el comportamiento de las ventas.
+
+## Comparación entre familias de productos
+
+### Pregunta analítica
+¿Cómo se comportan las diferentes familias de productos en términos de ventas?
+
+### Visualización
+```{python}
+top_familias = (
+    data.groupby("family", as_index=False)["sales"]
+    .sum()
+    .sort_values("sales", ascending=False)
+    .head(10)
+)
+
+ventas_top_familias = (
+    data[data["family"].isin(top_familias["family"])]
+    .groupby(["date", "family"], as_index=False)["sales"]
+    .sum()
+)
+
+grafico_familias = (
+    alt.Chart(ventas_top_familias)
+    .mark_line()
+    .encode(
+        x=alt.X("date:T", title="Fecha"),
+        y=alt.Y("sales:Q", title="Ventas"),
+        color=alt.Color("family:N", title="Familia"),
+        tooltip=[
+            alt.Tooltip("date:T", title="Fecha"),
+            alt.Tooltip("family:N", title="Familia"),
+            alt.Tooltip("sales:Q", title="Ventas", format=",.2f")
+        ]
+    )
+    .properties(
+        title="Comparación temporal de las 10 familias con mayores ventas",
+        width=800,
+        height=400
+    )
+    .interactive()
+)
+
+grafico_familias
+```
+### Interpretación
+
+La visualización muestra diferencias claras entre las familias de productos en términos de volumen de ventas.
+
+Algunas categorías, como GROCERY y BEVERAGES, destacan por concentrar un mayor nivel de ventas en comparación con otras familias.
+
+También se observa que estas familias presentan mayor variabilidad y picos más pronunciados, lo que sugiere una mayor sensibilidad a cambios en la demanda.
+
+Por otro lado, otras categorías mantienen niveles más bajos y estables, lo que indica un menor impacto relativo en el total de ventas.
+
+Esto evidencia que el negocio no depende de manera uniforme de todas las categorías, sino que ciertas familias tienen un rol dominante.
+
+### Análisis con boxplot
+```{python}
+ventas_familia_dia = (
+    data.groupby(["date", "family"], as_index=False)["sales"]
+    .sum()
+)
+
+top_10_names = top_familias["family"].tolist()
+
+boxplot_familias = (
+    alt.Chart(ventas_familia_dia[ventas_familia_dia["family"].isin(top_10_names)])
+    .mark_boxplot()
+    .encode(
+        x=alt.X("family:N", title="Familia", sort="-y"),
+        y=alt.Y("sales:Q", title="Ventas diarias"),
+        tooltip=[alt.Tooltip("family:N", title="Familia")]
+    )
+    .properties(
+        title="Distribución de ventas diarias en las principales familias",
+        width=800,
+        height=400
+    )
+)
+
+boxplot_familias
+```
+### Interpretación
+
+El boxplot muestra diferencias significativas en la distribución de ventas entre las distintas familias de productos.
+
+Se observa que categorías como GROCERY presentan tanto valores medianos más altos como una mayor dispersión, lo que indica un alto volumen de ventas pero también mayor variabilidad.
+
+Asimismo, se identifican múltiples valores atípicos (outliers), especialmente en las principales familias, lo que sugiere la existencia de días con ventas excepcionalmente altas.
+
+En contraste, otras categorías presentan distribuciones más concentradas y niveles de ventas más bajos, lo que confirma su menor impacto dentro del negocio.
+
+Esta visualización permite entender no solo cuánto vende cada categoría, sino también cuán consistente es su comportamiento.
+
+## Distribución de las ventas
+
+### Pregunta analítica
+¿Cómo se distribuyen las ventas y qué tan variables son?
+
+### Visualización
+
+```{python}
+ventas_diarias = (
+    data.groupby("date", as_index=False)["sales"]
+    .sum()
+)
+
+hist_ventas = (
+    alt.Chart(ventas_diarias)
+    .mark_bar()
+    .encode(
+        x=alt.X("sales:Q", bin=alt.Bin(maxbins=40), title="Ventas diarias"),
+        y=alt.Y("count():Q", title="Frecuencia"),
+        tooltip=[alt.Tooltip("count():Q", title="Frecuencia")]
+    )
+    .properties(
+        title="Distribución de las ventas diarias totales",
+        width=700,
+        height=400
+    )
+)
+
+hist_ventas
+```
+### Interpretación
+
+El histograma muestra que la distribución de las ventas diarias no es uniforme, sino que presenta una ligera asimetría hacia la derecha.
+
+La mayor concentración de observaciones se encuentra en rangos medios de ventas, mientras que existe una cola hacia valores altos, lo que indica la presencia de días con ventas significativamente superiores al promedio.
+
+Este comportamiento sugiere que el negocio experimenta picos de demanda ocasionales, posiblemente asociados a eventos especiales o temporadas específicas.
+
+En general, la distribución evidencia que las ventas tienen variabilidad considerable y no siguen un patrón completamente estable.
+
+## Ventas por día de la semana
+
+### Pregunta analítica
+¿Existen diferencias en las ventas según el día de la semana?
+
+### Visualización
+```{python}
+ventas_por_dia_semana = (
+    data.groupby(["date", "day_of_week"], as_index=False)["sales"]
+    .sum()
+)
+
+boxplot_dia_semana = (
+    alt.Chart(ventas_por_dia_semana)
+    .mark_boxplot()
+    .encode(
+        x=alt.X("day_of_week:N", title="Día de la semana", sort=orden_dias),
+        y=alt.Y("sales:Q", title="Ventas diarias"),
+        tooltip=[alt.Tooltip("day_of_week:N", title="Día")]
+    )
+    .properties(
+        title="Distribución de ventas por día de la semana",
+        width=700,
+        height=400
+    )
+)
+
+boxplot_dia_semana
+```
+
+### Interpretación
+
+El análisis por día de la semana muestra diferencias claras en el comportamiento de las ventas.
+
+Se observa que los fines de semana, especialmente sábado y domingo, presentan niveles de ventas más altos en comparación con los días laborales.
+
+Además, estos días también muestran una mayor dispersión, lo que indica una mayor variabilidad en el comportamiento de compra.
+
+En contraste, los días entre semana tienden a presentar niveles más bajos y relativamente más estables.
+
+Esto sugiere que el comportamiento del consumidor está influenciado por el calendario semanal, lo cual es relevante para la planificación operativa y comercial.
+
+## Relación entre ventas y transacciones
+
+### Pregunta analítica
+¿Existe una relación entre el número de transacciones y las ventas?
+
+### Visualización
+
+```{python}
+ventas_tienda_dia = (
+    data.groupby(["date", "store_nbr"], as_index=False)["sales"]
+    .sum()
+)
+
+ventas_transacciones = ventas_tienda_dia.merge(
+    transactions,
+    on=["date", "store_nbr"],
+    how="inner"
+)
+
+ventas_transacciones = ventas_transacciones.merge(
+    stores,
+    on="store_nbr",
+    how="left"
+)
+```
+
+```{python}
+import pandas as pd
+import altair as alt
+
+# Asegurar que no limite filas
+alt.data_transformers.disable_max_rows()
+
+# Crear una copia con una columna auxiliar para el filtro
+vt_ciudades = ventas_transacciones.copy()
+vt_ciudades["city_view"] = vt_ciudades["city"]
+
+# Duplicar los datos para crear la opción "Todas"
+vt_total = ventas_transacciones.copy()
+vt_total["city_view"] = "Todas"
+
+# Unir ambos
+vt_plot = pd.concat([vt_ciudades, vt_total], ignore_index=True)
+
+# Lista de opciones para el selector
+opciones_ciudad = ["Todas"] + sorted(ventas_transacciones["city"].dropna().unique().tolist())
+
+# Selector
+selector_ciudad = alt.selection_point(
+    fields=["city_view"],
+    bind=alt.binding_select(options=opciones_ciudad, name="Ciudad: "),
+    value="Todas"
+)
+
+# Gráfico
+scatter_ventas_trans = (
+    alt.Chart(vt_plot)
+    .add_params(selector_ciudad)
+    .transform_filter(selector_ciudad)
+    .mark_circle(size=60, opacity=0.5)
+    .encode(
+        x=alt.X("transactions:Q", title="Transacciones"),
+        y=alt.Y("sales:Q", title="Ventas"),
+        color=alt.Color("type:N", title="Tipo de tienda"),
+        tooltip=[
+            alt.Tooltip("date:T", title="Fecha"),
+            alt.Tooltip("store_nbr:O", title="Tienda"),
+            alt.Tooltip("city:N", title="Ciudad original"),
+            alt.Tooltip("type:N", title="Tipo de tienda"),
+            alt.Tooltip("transactions:Q", title="Transacciones", format=","),
+            alt.Tooltip("sales:Q", title="Ventas", format=",.2f")
+        ]
+    )
+    .properties(
+        title="Relación entre ventas y transacciones por tienda",
+        width=750,
+        height=450
+    )
+    .interactive()
+)
+
+scatter_ventas_trans
+```
+
+### Interpretación
+
+La visualización muestra una relación positiva clara entre el número de transacciones y las ventas, evidenciando que a mayor volumen de compras, mayores ingresos.
+
+Se observa una estructura aproximadamente lineal en la nube de puntos, aunque con una dispersión creciente a medida que aumentan las transacciones, lo que indica que la relación no es perfectamente proporcional.
+
+Al diferenciar por tipo de tienda, se identifican agrupaciones claras:
+
+- Las tiendas tipo A se concentran en niveles altos de transacciones y ventas, dominando la parte superior del gráfico.
+- Los tipos B, C y D se distribuyen en rangos intermedios y bajos.
+- El tipo E aparece en zonas intermedias con un comportamiento diferenciado.
+
+La dispersión dentro de cada grupo sugiere que, además del número de transacciones, el valor promedio por compra también influye en las ventas.
+
+En conjunto, el gráfico evidencia que el volumen de clientes es el principal impulsor de ingresos, pero no el único factor.
+
+## Conclusiones
+
+El análisis de visualización permite identificar patrones claros en el comportamiento de las ventas.
+
+En primer lugar, se evidencia una tendencia creciente sostenida en el tiempo, lo que indica una expansión del negocio.
+
+Adicionalmente, se identifican patrones estacionales, con incrementos recurrentes en determinados meses, especialmente hacia el final del año.
+
+El análisis por categorías muestra que ciertas familias de productos concentran la mayor parte de las ventas, lo que evidencia una contribución desigual dentro del portafolio.
+
+Asimismo, la distribución de las ventas revela una alta variabilidad y la presencia de picos de demanda, lo que sugiere que el negocio no opera bajo condiciones completamente estables.
+
+El comportamiento semanal confirma que los fines de semana concentran mayores niveles de ventas, reflejando cambios en los hábitos de consumo.
+
+Finalmente, la relación entre ventas y transacciones demuestra que el volumen de clientes es el principal factor que impulsa los ingresos, mientras que las diferencias entre tipos de tienda reflejan distintos niveles de escala operativa.
+
+En conjunto, estos hallazgos muestran cómo la visualización de datos permite comprender de manera integral el comportamiento del negocio y apoyar la toma de decisiones.

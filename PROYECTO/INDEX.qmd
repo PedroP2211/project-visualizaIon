@@ -1,0 +1,73 @@
+---
+title: "Análisis de ventas de Corporación La Favorita"
+author: "Pedro Peña - Juan Endara"
+format: html
+---
+
+# Introducción
+
+Este proyecto presenta un análisis exploratorio de datos sobre las ventas de **Corporación La Favorita**, una empresa del sector retail en Ecuador. A partir de información histórica de ventas, tiendas y transacciones, se busca comprender el comportamiento comercial de la empresa y detectar patrones relevantes que puedan ser comunicados mediante visualizaciones.
+
+# Contexto del problema
+
+En el sector retail, el análisis de ventas es fundamental para comprender el desempeño de tiendas, categorías de productos y patrones de consumo a lo largo del tiempo. Las empresas necesitan identificar tendencias, cambios estacionales y diferencias entre segmentos para apoyar la toma de decisiones comerciales.
+
+En este caso, el proyecto utiliza datos históricos de ventas diarias de Corporación La Favorita, organizados por tienda, familia de producto y fecha. Este tipo de información permite estudiar tanto el comportamiento general de las ventas como variaciones específicas entre categorías y periodos de tiempo.
+
+# Motivación del análisis
+
+La motivación principal de este proyecto es aplicar técnicas de limpieza, preparación y visualización de datos para extraer información útil a partir de un dataset real del sector retail. Además de desarrollar un análisis exploratorio, el proyecto busca transformar datos crudos en visualizaciones comprensibles que permitan identificar patrones, tendencias y posibles relaciones entre variables.
+
+Desde una perspectiva académica, este trabajo permite reforzar conceptos de análisis exploratorio de datos, preparación de datos y comunicación visual de resultados usando Python y Altair.
+
+# Preguntas principales del proyecto
+
+El proyecto busca responder, entre otras, las siguientes preguntas:
+
+- ¿Cómo evolucionan las ventas a lo largo del tiempo?
+- ¿Existen patrones mensuales o diarios en el comportamiento de las ventas?
+- ¿Cómo se distribuyen las ventas en el dataset?
+- ¿Qué diferencias se observan entre familias de productos?
+- ¿Qué categorías presentan mayores niveles de ventas?
+- ¿Cómo puede resumirse visualmente el comportamiento general de las ventas?
+
+# Descripción del dataset utilizado
+
+Para el desarrollo del proyecto se utilizaron principalmente tres archivos extraidos de https://www.kaggle.com/c/favorita-grocery-sales-forecasting/data:
+
+## `train.csv`
+Contiene el registro principal de ventas. Cada fila representa las ventas de una familia de productos en una tienda específica y en una fecha determinada. Entre sus variables principales se encuentran:
+
+- `date`: fecha del registro
+- `store_nbr`: identificador de la tienda
+- `family`: familia o categoría de producto
+- `sales`: valor de ventas
+- `onpromotion`: número de productos en promoción
+
+## `stores.csv`
+Incluye información descriptiva de las tiendas, como:
+
+- ciudad
+- estado
+- tipo de tienda
+- clúster
+
+## `transactions.csv`
+Contiene el número de transacciones registradas por tienda y fecha, lo cual puede complementar el análisis del comportamiento comercial.
+
+En conjunto, estos archivos permiten estudiar la evolución temporal de las ventas, comparar categorías de producto y analizar características del negocio desde distintas perspectivas.
+
+# Estructura del proyecto
+
+El proyecto está organizado en las siguientes secciones:
+
+- [Limpieza y preparación de datos](data_cleaning.html)
+- [Visualizaciones del análisis](Proyecto_final.html)
+
+# Alcance del proyecto
+
+Este trabajo se enfoca principalmente en la preparación de los datos y en la construcción de visualizaciones exploratorias. No busca desarrollar un modelo predictivo, sino comprender el comportamiento de las ventas y comunicar los hallazgos de forma clara y visual.
+
+# Conclusión
+
+Esta página funciona como introducción general al proyecto. En las siguientes secciones se detalla primero el proceso de limpieza y preparación de los datos, y luego las visualizaciones construidas para explorar las tendencias y patrones presentes en el dataset.
