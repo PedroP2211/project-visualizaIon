@@ -327,5 +327,33 @@
     "title": "VISUAL",
     "section": "Minimap - Release Date",
     "text": "Minimap - Release Date\n\n\nCode\nselect_date = alt.selection_interval()\n\nbase = alt.Chart(movies).mark_line(point=True).encode(\n    alt.X('Release_Date'),\n    alt.Y('mean(Worldwide_Gross)')\n).properties(\n    width=500\n)\n\n# base\n\n\n##details\nupper_chart = base.encode(\n    alt.X('Release_Date', scale=alt.Scale(domain=select_date))\n).properties(height=180)\n\nlower_chart = base.add_params(select_date).properties(height=50)\n\nupper_chart & lower_chart"
+  },
+  {
+    "objectID": "PROYECTO/Indice.html",
+    "href": "PROYECTO/Indice.html",
+    "title": "Análisis de ventas de Corporación La Favorita",
+    "section": "",
+    "text": "Este proyecto presenta un análisis exploratorio de datos sobre las ventas de Corporación La Favorita, una empresa del sector retail en Ecuador. A partir de información histórica de ventas, tiendas y transacciones, se busca comprender el comportamiento comercial de la empresa y detectar patrones relevantes que puedan ser comunicados mediante visualizaciones."
+  },
+  {
+    "objectID": "PROYECTO/Indice.html#train.csv",
+    "href": "PROYECTO/Indice.html#train.csv",
+    "title": "Análisis de ventas de Corporación La Favorita",
+    "section": "train.csv",
+    "text": "train.csv\nContiene el registro principal de ventas. Cada fila representa las ventas de una familia de productos en una tienda específica y en una fecha determinada. Entre sus variables principales se encuentran:\n\ndate: fecha del registro\nstore_nbr: identificador de la tienda\nfamily: familia o categoría de producto\nsales: valor de ventas\nonpromotion: número de productos en promoción"
+  },
+  {
+    "objectID": "PROYECTO/Indice.html#stores.csv",
+    "href": "PROYECTO/Indice.html#stores.csv",
+    "title": "Análisis de ventas de Corporación La Favorita",
+    "section": "stores.csv",
+    "text": "stores.csv\nIncluye información descriptiva de las tiendas, como:\n\nciudad\nestado\ntipo de tienda\nclúster"
+  },
+  {
+    "objectID": "PROYECTO/Indice.html#transactions.csv",
+    "href": "PROYECTO/Indice.html#transactions.csv",
+    "title": "Análisis de ventas de Corporación La Favorita",
+    "section": "transactions.csv",
+    "text": "transactions.csv\nContiene el número de transacciones registradas por tienda y fecha, lo cual puede complementar el análisis del comportamiento comercial.\nEn conjunto, estos archivos permiten estudiar la evolución temporal de las ventas, comparar categorías de producto y analizar características del negocio desde distintas perspectivas."
   }
 ]
